@@ -9,7 +9,11 @@
  *          Asigna memoria dinámica a data mediante malloc con un número de elementos igual a len
  */
 Stack stack_create(int len){
-
+    Stack s;
+    s.len=len;
+    s.data=(Data*)malloc(sizeof(Data)*s.len);
+    s.top=-1;
+    return s;
 }
 
 /**
@@ -21,7 +25,14 @@ Stack stack_create(int len){
  *          la función no realiza ninguna operación.
  */
 void stack_push(Stack* s, Data d){
-
+    if (s->top<s->len-1)
+    {
+        s->top++;
+        s->data(s->top)=d;
+        return;
+    }
+    printf("La pila esta llena\n");
+    
 }
 
 /**
@@ -34,7 +45,14 @@ void stack_push(Stack* s, Data d){
  *          Si la pila está vacía, no se realiza ninguna operación y se devuelve un valor de error.
  */
 Data stack_pop(Stack* s){
-
+    if (s->top >= 0) {  // Comprobamos si la pila no está vacía
+        Data top = s->data[s->top];  // Guardamos el valor que se va a eliminar
+        s->top--;  // Decrementamos top para "eliminar" el elemento
+        return top;  // Retornamos el dato eliminado
+    } else {
+        printf("La pila esta vacia\n");
+        return -1;  // Indicamos que no se pudo hacer pop, ya que la pila está vacía
+    }
 }
 
 /**
@@ -46,7 +64,7 @@ Data stack_pop(Stack* s){
  *          como `stack_pop` en una pila vacía.
  */
 int stack_is_empty(Stack* s){
-
+    return s.top==-1;
 }
 
 /**
@@ -56,7 +74,8 @@ int stack_is_empty(Stack* s){
  * @details Esta función hace que top sea igual a -1
  */
 void stack_empty(Stack* s){
-
+  
+    s->top = -1;
 }
 
 /**
@@ -66,7 +85,8 @@ void stack_empty(Stack* s){
  * @details Esta función libera la memoria asignada dinámicamente para data dentro de la pila
  */
 void stack_delete(Stack *s){
-
+    free(s->data);  // Liberamos la memoria asignada para los elementos de la pila
+    s->data = NULL;
 }
 
 /**
@@ -79,5 +99,16 @@ void stack_delete(Stack *s){
  *          la salida estándar (stdout).
  */
 void stack_print(Stack *s){
-
+    if (stack_is_empty(s)) {  // Verificamos si la pila esta vacia
+        printf("[]\n");  //
+        return;
+    }
+    printf("[");
+    for (int i = s->top; i >= 0; i--) {  // Recorremos la pila desde el top hacia abajo
+        printf("%d", s->data[i]);  // Imprimimos cada elemento
+        if (i > 0) {
+            printf(", ");  // Añadimos una coma si no es el último elemento
+        }
+    }
+    printf("]\n");  
 }

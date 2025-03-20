@@ -1,4 +1,6 @@
 #include "stack.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 /**
  * Crea una nueva pila vacía y la devuelve.
@@ -9,7 +11,9 @@
  *          está vacía y top apunta a NULL
  */
 Stack *stack_create(){
-
+    Stack *s = (Stack*)malloc(sizeof(Stack)); // Asigna memoria para la pila
+    s->top = NULL;  // La pila está vacía, por lo tanto, `top` apunta a NULL
+    return s;  
 }
 
 /**
@@ -21,7 +25,19 @@ Stack *stack_create(){
  *          o el puntero `s` es NULL, la función no realiza ninguna operación.
  */
 void stack_push(Stack* s, Data d){
+    if (s == NULL) {  // Verifica que la pila no sea NULL
+        printf("Pila no válida.\n");
+        return;
+    }
 
+    Node *n = new_node(d);  // Crea un nuevo nodo con el dato proporcionado
+    if (n == NULL) {  // Verifica si la creación del nodo fue exitosa
+        printf("Error al crear el nodo.\n");
+        return;
+    }
+
+    n->next = s->top;  // El nuevo nodo apunta al nodo que está en la parte superior de la pila
+    s->top = n; 
 }
 
 /**
@@ -46,7 +62,16 @@ Data stack_pop(Stack* s){
  *          como `stack_pop` en una pila vacía.
  */
 int stack_is_empty(Stack* s){
+    if (s == NULL) {  // Verifica si la pila o la parte superior de la pila es NULL
+        printf("Pila vacía o inválida.\n");
+        return -1;  // Valor de error 
+    }
 
+    Node *top_node = s->top;  // Almacena el nodo superior de la pila
+    s->top = s->top->next;     // Actualiza la parte superior de la pila
+    Data d = top_node->data;  // Obtiene el dato del nodo que se va a eliminar
+    delete_node(top_node);    // Libera la memoria del nodo eliminado
+    return d;
 }
 
 /**
@@ -58,7 +83,14 @@ int stack_is_empty(Stack* s){
  *          La memoria de los elementos eliminados se libera adecuadamente.
  */
 void stack_empty(Stack* s){
-
+   
+    Node *current = s->top;  // Apunta al primer nodo de la pila
+    while (current != NULL) {  // Recorre la pila hasta que no queden elementos
+        Node *next = current->next;  // Guarda el siguiente nodo
+        delete_node(current);         // Libera la memoria del nodo actual
+        current = next;               // Avanza al siguiente nodo
+    }
+    s->top = NULL;  // Al finalizar, la pila está vacía
 }
 
 /**
@@ -71,7 +103,8 @@ void stack_empty(Stack* s){
  *          de ser eliminada.
  */
 void stack_delete(Stack *s){
-
+    stack_empty(s);  // Elimina todos los elementos de la pila
+    free(s);  
 }
 
 /**
@@ -84,5 +117,15 @@ void stack_delete(Stack *s){
  *          la salida estándar (stdout).
  */
 void stack_print(Stack *s){
+    if (s == NULL) {  // Verifica si la pila es NULL o está vacía
+        printf("Pila vacía o inválida.\n");
+        return;
+    }
 
+    Node *current = s->top;  // Apunta al primer nodo de la pila
+    while (current != NULL) {  // Recorre la pila
+        printf("%d ", current->data);  // Imprime el dato del nodo actual
+        current = current->next;       // Avanza al siguiente nodo
+    }
+    printf("\n");  // Imprime una nueva línea al final
 }

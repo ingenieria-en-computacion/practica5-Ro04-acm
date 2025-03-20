@@ -9,7 +9,12 @@
  * @details Esta función inicializa una cola vacía. Asigna memoria dinàmica con malloc al arreglo data usando len
  */
 Queue queue_create(int len){
-
+    Queue q;
+    q.data = (Data*)malloc(len * sizeof(Data)); // Asignamos la memoria 
+    q.head = 0;   // El índice de inicio se pone en 0.
+    q.tail = q.head;  // Al no haber datos apuntan a lo mismo
+    q.len = len;  // La longitud máxima de la cola.
+    return q;     // Devuelve la cola inicializada.
 }
 
 /**
@@ -20,7 +25,10 @@ Queue queue_create(int len){
  * @details Esta función añade el dato `d` al final de la cola.
  */
 void queue_enqueue(Queue* q, Data d){
-
+    if (q->tail < q->len - 1) {  // Verifica que haya espacio en la cola
+        q->tail++;               // Incrementa el índice final.
+        q->data[q->tail] = d;    // Inserta el dato al final de la cola.
+    }
 }
 
 /**
@@ -33,7 +41,16 @@ void queue_enqueue(Queue* q, Data d){
  *          Si la cola está vacía, no se realiza ninguna operación y se devuelve un valor de error.
  */
 Data queue_dequeue(Queue* q){
-
+    if (queue_is_empty(q)) {      // Si la cola esta vacia devuelve un error
+        return -1;                
+    }
+    Data front = q->data[q->head]; // Guarda el elemento al frente.
+        q->head++;                     // Mueve hacia enfrente.
+        if (q->head > q->tail) {      
+        q->head = 0;
+        q->tail = -1;
+        }
+    return front; 
 }
 
 /**
@@ -45,7 +62,7 @@ Data queue_dequeue(Queue* q){
  *          como `queue_dequeue` en una cola vacía.
  */
 bool queue_is_empty(Queue* q){
-
+    return q->tail == -1;
 }
 
 /**
@@ -57,7 +74,10 @@ bool queue_is_empty(Queue* q){
  *          Si la cola está vacía, no se realiza ninguna operación y se devuelve un valor de error.
  */
 Data queue_front(Queue* q){
-
+    if (queue_is_empty(q)) {
+        return -1;  // Valor de error si esta vacia 
+    }
+    return q->data[q->head];  //lo que usamos al guardar el elemento al frente
 }
 
 /**
@@ -67,7 +87,8 @@ Data queue_front(Queue* q){
  * @details Esta función hace que los índices head y tail tomen el valor de -1
  */
 void queue_empty(Queue* q){
-
+    q->head = 0;   // El índice de inicio se pone en 0.
+    q->tail = q->head;  // Al no haber datos apuntan a lo mismo
 }
 
 /**
@@ -79,5 +100,6 @@ void queue_empty(Queue* q){
  *          de ser eliminada.
  */
 void queue_delete(Queue* q){
-
+    free(q->data);  // Libera la memoria 
+    q->data = NULL; // Pone el puntero a NULL para evitar uso accidental.
 }
